@@ -51,10 +51,10 @@ const Home = () => {
     }
   };
 
-  const filteredJokes = likedJokes
-    .filter((joke) => joke.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => (sortAsc ? a.localeCompare(b) : b.localeCompare(a)));
-
+  const filteredJokes = likedJokes.filter((joke) => 
+    typeof joke === 'string' && joke.toLowerCase().includes(search.toLowerCase())
+  )
+  .sort((a, b) => (sortAsc ? a.localeCompare(b) : b.localeCompare(a)));
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start gap-y-6 p-6">
       <JokeCard
