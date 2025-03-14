@@ -24,7 +24,7 @@ const LikedJokesList = ({ jokes, onRemoveJoke, onRatingChange }: LikedJokesListP
                 <button
                   key={star}
                   onClick={() => onRatingChange(joke.text, star)}
-                  className={`text-2xl ${
+                  className={`text-2xl cursor-pointer ${
                     star <= joke.rating ? 'text-yellow-500' : 'text-gray-300'
                   }`}
                 >
