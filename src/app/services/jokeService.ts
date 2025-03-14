@@ -14,8 +14,8 @@ export const getRandomJoke = async (): Promise<JokeResponse> => {
     });
    
     return {
-      joke: response.data.joke,
-      id: response.data.id
+      joke: response?.data?.joke || 'No joke available',
+      id: response?.data?.id     ||  'unknown'
     };
     
   } catch (error) {
