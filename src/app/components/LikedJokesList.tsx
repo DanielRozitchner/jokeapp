@@ -3,6 +3,7 @@
 interface JokeItem {
   text: string;
   rating: number;
+  id: string;
 }
 
 interface LikedJokesListProps {
@@ -14,8 +15,8 @@ interface LikedJokesListProps {
 const LikedJokesList = ({ jokes, onRemoveJoke, onRatingChange }: LikedJokesListProps) => {
   return (
     <ul className="list-none">
-      {jokes?.length ? jokes.map((joke, index) => (
-        <li key={index} className="bg-gray-100 p-4 mb-4 rounded-lg shadow-md">
+      {jokes?.length ? jokes.map((joke) => (
+        <li key={joke.id} className="bg-gray-100 p-4 mb-4 rounded-lg shadow-md">
           <p>{joke.text}</p>
           <div className="flex items-center justify-between mt-4">
             <div className="flex space-x-1">
@@ -23,7 +24,7 @@ const LikedJokesList = ({ jokes, onRemoveJoke, onRatingChange }: LikedJokesListP
                 <button
                   key={star}
                   onClick={() => onRatingChange(joke.text, star)}
-                  className={`text-2xl cursor-pointer ${
+                  className={`text-2xl ${
                     star <= joke.rating ? 'text-yellow-500' : 'text-gray-300'
                   }`}
                 >
@@ -39,8 +40,9 @@ const LikedJokesList = ({ jokes, onRemoveJoke, onRatingChange }: LikedJokesListP
                 Remove
               </button>
               <a
-                href={`https://icanhazdadjoke.com/j/${index}`}
+                href={`https://icanhazdadjoke.com/j/${joke.id}`}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="bg-blue-500 px-4 py-1 rounded-md text-center text-white block"
               >
                 Share

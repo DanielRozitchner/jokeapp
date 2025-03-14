@@ -6,13 +6,19 @@ import JokeCard from './components/JokeCard';
 import LikedJokesList from './components/LikedJokesList';
 import SearchBar from './components/SearchBar';
 
+interface JokeResponse {
+  joke: string;
+  id: string;
+}
+
 interface JokeItem {
   text: string;
   rating: number;
+  id: string;
 }
 
 const Home = () => {
-  const [joke, setJoke] = useState<string>('');
+  const [joke, setJoke] = useState<JokeResponse | null>(null);
   const [likedJokes, setLikedJokes] = useState<JokeItem[]>([]);
   const [search, setSearch] = useState<string>('');
   const [sortAsc, setSortAsc] = useState<boolean>(false);
@@ -29,19 +35,14 @@ const Home = () => {
   }, []);
 
   const fetchNewJoke = async () => {
-    try{
-    setIsLoading(true)
-    const newJoke = await getRandomJoke();
-    if (newJoke?.length){
-      setJoke(newJoke);
-    } else {
-      setJoke('Joke not founded')
+    setIsLoading(true);
+    try {
+      const response = await getRandomJoke();
+      setJoke(response);
+    } catch (error) {
+      console.error('Error fetching joke:', error);
     }
-    setIsLoading(false)
-    } catch (e){
-      setIsLoading(false)
-      console.log(e)
-    }
+    setIsLoading(false);
   };
 
   const handleRemoveJoke = (jokeText: string) => {
@@ -51,8 +52,8 @@ const Home = () => {
   };
 
   const handleLikeJoke = () => {
-    if (!likedJokes.some(j => j.text === joke)) {
-      const updatedJokes = [...likedJokes, { text: joke, rating: 1 }];
+    if (joke && !likedJokes.some(j => j.text === joke.joke)) {
+      const updatedJokes = [...likedJokes, { text: joke.joke, rating: 1, id: joke.id }];
       setLikedJokes(updatedJokes);
       localStorage.setItem('likedJokes', JSON.stringify(updatedJokes));
       alert('Joke added to your liked list!');
@@ -82,7 +83,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start gap-y-6 p-6">
       <JokeCard
-        joke={joke}
+        joke={joke?.joke || ''}
         onFetchNewJoke={fetchNewJoke}
         onLikeJoke={handleLikeJoke}
         isLoading={isLoading}
