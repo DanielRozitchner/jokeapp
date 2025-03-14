@@ -15,13 +15,14 @@ const Home = () => {
   const [joke, setJoke] = useState<string>('');
   const [likedJokes, setLikedJokes] = useState<JokeItem[]>([]);
   const [search, setSearch] = useState<string>('');
-  const [sortAsc, setSortAsc] = useState<boolean>(true);
+  const [sortAsc, setSortAsc] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<'text' | 'rating'>('text');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const storedJokes = localStorage.getItem('likedJokes');
     if (storedJokes) {
+      debugger
       setLikedJokes(JSON.parse(storedJokes));
     }
     fetchNewJoke();
@@ -86,22 +87,24 @@ const Home = () => {
         onLikeJoke={handleLikeJoke}
         isLoading={isLoading}
       />
-      <div className="mt-2 w-1/2 shadow-md p-6 bg-white">
-        <h2 className="text-xl font-semibold py-2">Liked Jokes</h2>
-        <SearchBar
-          search={search}
-          sortAsc={sortAsc}
-          sortBy={sortBy}
-          onSearchChange={setSearch}
-          onSortToggle={() => setSortAsc(!sortAsc)}
-          onSortByChange={setSortBy}
-        />
-        <LikedJokesList
-          jokes={filteredJokes}
-          onRemoveJoke={handleRemoveJoke}
-          onRatingChange={handleRatingChange}
-        />
-      </div>
+      {likedJokes.length ?
+        <div className= "mt-2 w-1/2 shadow-md p-6 bg-white">
+          <h2 className="text-xl font-semibold py-2">Liked Jokes</h2>
+          <SearchBar
+            search={search}
+            sortAsc={sortAsc}
+            sortBy={sortBy}
+            onSearchChange={setSearch}
+            onSortToggle={() => setSortAsc(!sortAsc)}
+            onSortByChange={setSortBy}
+          />
+          <LikedJokesList
+            jokes={filteredJokes}
+            onRemoveJoke={handleRemoveJoke}
+            onRatingChange={handleRatingChange}
+          />
+        </div>
+      : null}
     </div>
   );
 };
