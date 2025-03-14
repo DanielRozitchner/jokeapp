@@ -7,7 +7,11 @@ export const getRandomJoke = async () => {
         Accept: 'application/json',
       },
     });
-    return response.data.joke;
+    if(response?.data?.joke?.length){
+        return response.data.joke;
+    }{
+        return 'Not joke founded'
+    }
   } catch (error) {
     console.error('Error fetching joke', error);
     return 'Joke not found';

@@ -6,11 +6,17 @@ import JokeCard from './components/JokeCard';
 import LikedJokesList from './components/LikedJokesList';
 import SearchBar from './components/SearchBar';
 
+interface JokeItem {
+  text: string;
+  rating: number;
+}
+
 const Home = () => {
   const [joke, setJoke] = useState<string>('');
-  const [likedJokes, setLikedJokes] = useState<string[]>([]);
+  const [likedJokes, setLikedJokes] = useState<JokeItem[]>([]);
   const [search, setSearch] = useState<string>('');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
+  const [sortBy, setSortBy] = useState<'text' | 'rating'>('text');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -37,24 +43,41 @@ const Home = () => {
     }
   };
 
-  const handleRemoveJoke = (jokeToRemove: string) => {
-    const updatedJokes = likedJokes.filter((j) => j !== jokeToRemove);
+  const handleRemoveJoke = (jokeText: string) => {
+    const updatedJokes = likedJokes.filter((j) => j.text !== jokeText);
     setLikedJokes(updatedJokes);
     localStorage.setItem('likedJokes', JSON.stringify(updatedJokes));
   };
 
   const handleLikeJoke = () => {
-    if (!likedJokes.includes(joke)) {
-      const updatedJokes = [...likedJokes, joke];
+    if (!likedJokes.some(j => j.text === joke)) {
+      const updatedJokes = [...likedJokes, { text: joke, rating: 1 }];
       setLikedJokes(updatedJokes);
       localStorage.setItem('likedJokes', JSON.stringify(updatedJokes));
+      alert('Joke added to your liked list!');
+    } else {
+      alert('This joke is already in your liked list!');
     }
   };
 
-  const filteredJokes = likedJokes.filter((joke) => 
-    typeof joke === 'string' && joke.toLowerCase().includes(search.toLowerCase())
-  )
-  .sort((a, b) => (sortAsc ? a.localeCompare(b) : b.localeCompare(a)));
+  const handleRatingChange = (jokeText: string, newRating: number) => {
+    const updatedJokes = likedJokes.map(j => 
+      j.text === jokeText ? { ...j, rating: newRating } : j
+    );
+    setLikedJokes(updatedJokes);
+    localStorage.setItem('likedJokes', JSON.stringify(updatedJokes));
+  };
+
+  const filteredJokes = likedJokes
+    .filter((joke) => 
+      typeof joke?.text === 'string' && joke.text.toLowerCase().includes(search?.toLowerCase() || '')
+    )
+    .sort((a, b) => {
+      if (sortBy === 'rating') {
+        return sortAsc ? a.rating - b.rating : b.rating - a.rating;
+      }
+      return sortAsc ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text);
+    });
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start gap-y-6 p-6">
       <JokeCard
@@ -68,12 +91,15 @@ const Home = () => {
         <SearchBar
           search={search}
           sortAsc={sortAsc}
+          sortBy={sortBy}
           onSearchChange={setSearch}
           onSortToggle={() => setSortAsc(!sortAsc)}
+          onSortByChange={setSortBy}
         />
         <LikedJokesList
           jokes={filteredJokes}
           onRemoveJoke={handleRemoveJoke}
+          onRatingChange={handleRatingChange}
         />
       </div>
     </div>
